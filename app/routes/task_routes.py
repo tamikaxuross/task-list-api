@@ -3,6 +3,12 @@ from app.models.task import Task
 from ..db import db
 from datetime import datetime
 
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
 # Helper: safely get a task by ID or return a 404 JSON response
@@ -97,6 +103,14 @@ def mark_task_complete(task_id):
 
     task.completed_at = datetime.utcnow()
     db.session.commit()
+
+    # Send Slack message
+    slack_url = os.environ.get("SLACK_WEBHOOK_URL")
+    if slack_url:
+        slack_message = {
+            "text": f"Someone just completed the task: {task.title}"
+        }
+        requests.post(slack_url, json=slack_message)
 
     return Response(status=204, mimetype="application/json")
 
