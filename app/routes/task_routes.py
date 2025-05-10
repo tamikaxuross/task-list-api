@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, Response
 from app.models.task import Task
 from ..db import db
-from datetime import datetime
+from datetime import datetime, UTC
 
 import os
 import requests
@@ -101,7 +101,7 @@ def mark_task_complete(task_id):
     if not isinstance(task, Task):
         return task
 
-    task.completed_at = datetime.utcnow()
+    task.completed_at = datetime.now(UTC)
     db.session.commit()
 
     # Send Slack message

@@ -15,7 +15,7 @@ def assign_tasks_to_goal(goal_id):
     task_ids = request_body.get("task_ids", [])
 
     for task_id in task_ids:
-        task = Task.query.get(task_id)
+        task = db.session.get(Task, task_id)
         if task:
             task.goal_id = goal.id
 
