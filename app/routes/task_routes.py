@@ -107,12 +107,10 @@ def mark_task_complete(task_id):
     # Send Slack message
     slack_url = os.environ.get("SLACK_WEBHOOK_URL")
     if slack_url:
-        slack_message = {
-            "text": f"Someone just completed the task: {task.title}"
-        }
+        slack_message = {"text": f"Someone just completed the task: {task.title}"}
         requests.post(slack_url, json=slack_message)
 
-    return Response(status=204, mimetype="application/json")
+    return jsonify({"task": task.to_dict()}), 200
 
 # PATCH /tasks/<task_id>/mark_incomplete
 @bp.patch("/<task_id>/mark_incomplete")
@@ -124,4 +122,4 @@ def mark_task_incomplete(task_id):
     task.completed_at = None
     db.session.commit()
 
-    return Response(status=204, mimetype="application/json")
+    return jsonify({"task": task.to_dict()}), 200
