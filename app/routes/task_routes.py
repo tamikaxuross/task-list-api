@@ -97,9 +97,13 @@ def delete_task(task_id):
 # PATCH /tasks/<task_id>/mark_complete
 @bp.patch("/<task_id>/mark_complete")
 def mark_task_complete(task_id):
-    task = get_task_or_abort(task_id)
-    if not isinstance(task, Task):
-        return task
+    try:
+        task_id = int(task_id)
+    except ValueError:
+        return {"message": "Invalid task ID"}, 400
+    task = db.session.get(Task, task_id)
+    if not task:
+        return {"message": f"No task with ID {task_id} found"}, 404
 
     task.completed_at = datetime.now(UTC)
     db.session.commit()
@@ -110,16 +114,20 @@ def mark_task_complete(task_id):
         slack_message = {"text": f"Someone just completed the task: {task.title}"}
         requests.post(slack_url, json=slack_message)
 
-    return jsonify({"task": task.to_dict()}), 200
-
+    return Response(status=204, mimetype="application/json")
 # PATCH /tasks/<task_id>/mark_incomplete
 @bp.patch("/<task_id>/mark_incomplete")
 def mark_task_incomplete(task_id):
-    task = get_task_or_abort(task_id)
-    if not isinstance(task, Task):
-        return task
+    try:
+        task_id = int(task_id)
+    except ValueError:
+        return {"message": "Invalid task ID"}, 400
+    task = db.session.get(Task, task_id)
+    if not task:
+        return {"message": f"No task with ID {task_id} found"}, 404
+
 
     task.completed_at = None
     db.session.commit()
 
-    return jsonify({"task": task.to_dict()}), 200
+    return Response(status=204, mimetype="application/json")
