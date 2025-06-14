@@ -14,10 +14,11 @@ def assign_tasks_to_goal(goal_id):
     request_body = request.get_json()
     task_ids = request_body.get("task_ids", [])
 
+    goal.tasks = [] 
     for task_id in task_ids:
         task = db.session.get(Task, task_id)
         if task:
-            task.goal_id = goal.id
+            goal.tasks.append(task)
 
     db.session.commit()
 
@@ -54,7 +55,7 @@ def create_goal():
 # GET all goals
 @bp.get("")
 def get_goals():
-    goals = Goal.query.all()
+    goals = db.session.scalars(db.select(Goal)).all()
     return jsonify([goal.to_dict() for goal in goals])
 
 # GET one goal

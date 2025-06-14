@@ -44,17 +44,20 @@ def get_all_tasks():
     sort_order = request.args.get("sort")
     title_filter = request.args.get("title")
 
-    query = db.session.query(Task)
+    stmt = db.select(Task)
 
     if title_filter:
-        query = query.filter(Task.title.ilike(f"%{title_filter}%"))
+        stmt = stmt.where(Task.title.ilike(f"%{title_filter}%"))
 
     if sort_order == "asc":
-        query = query.order_by(Task.title.asc())
+        stmt = stmt.order_by(Task.title.asc())
     elif sort_order == "desc":
-        query = query.order_by(Task.title.desc())
+        stmt = stmt.order_by(Task.title.desc())
+    else:
+        stmt = stmt.order_by(Task.id.asc())  # fallback sort
 
-    tasks = query.all()
+    tasks = db.session.scalars(stmt).all()
+
     return jsonify([task.to_dict() for task in tasks])
 
 
