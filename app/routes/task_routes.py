@@ -2,12 +2,13 @@ from flask import Blueprint, request, jsonify, Response
 from app.models.task import Task
 from ..db import db
 from datetime import datetime, UTC
+from app.slack_helper import post_to_slack
 
-import os
-import requests
-from dotenv import load_dotenv
+#import os
+#import requests
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
@@ -112,12 +113,14 @@ def mark_task_complete(task_id):
     db.session.commit()
 
     # Send Slack message
-    slack_url = os.environ.get("SLACK_WEBHOOK_URL")
-    if slack_url:
-        slack_message = {"text": f"Someone just completed the task: {task.title}"}
-        requests.post(slack_url, json=slack_message)
-
+    post_to_slack(f"Someone just completed the task: {task.title}")
     return Response(status=204, mimetype="application/json")
+    #slack_url = os.environ.get("SLACK_WEBHOOK_URL")
+    #if slack_url:
+      #  slack_message = {"text": f"Someone just completed the task: {task.title}"}
+       # requests.post(slack_url, json=slack_message)
+
+    
 # PATCH /tasks/<task_id>/mark_incomplete
 @bp.patch("/<task_id>/mark_incomplete")
 def mark_task_incomplete(task_id):
