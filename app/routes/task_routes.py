@@ -3,12 +3,12 @@ from app.models.task import Task
 from ..db import db
 from datetime import datetime, UTC
 from app.slack_helper import post_to_slack
-
+load_dotenv()
 #import os
 #import requests
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-#load_dotenv()
+
 
 bp = Blueprint("tasks_bp", __name__, url_prefix="/tasks")
 
