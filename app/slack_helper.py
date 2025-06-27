@@ -18,4 +18,6 @@ def post_to_slack(message):
         "text": message
     }
 
-    requests.post("https://slack.com/api/chat.postMessage", json=slack_message, headers=headers)
+    response = requests.post("https://slack.com/api/chat.postMessage", json=slack_message, headers=headers)
+    print("Slack response status:", response.status_code)
+    print("Slack response body:", response.text)

@@ -3,10 +3,12 @@ from app.models.task import Task
 from ..db import db
 from datetime import datetime, UTC
 from app.slack_helper import post_to_slack
-load_dotenv()
-#import os
-#import requests
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
+
+
+import os
+import requests
+#load_dotenv()
 
 
 
@@ -115,6 +117,8 @@ def mark_task_complete(task_id):
     # Send Slack message
     post_to_slack(f"Someone just completed the task: {task.title}")
     return Response(status=204, mimetype="application/json")
+
+
     #slack_url = os.environ.get("SLACK_WEBHOOK_URL")
     #if slack_url:
       #  slack_message = {"text": f"Someone just completed the task: {task.title}"}
